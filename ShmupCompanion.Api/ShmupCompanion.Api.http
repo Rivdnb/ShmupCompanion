@@ -1,0 +1,6 @@
+@ShmupCompanion.Api_HostAddress = http://localhost:5265
+
+GET {{ShmupCompanion.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
