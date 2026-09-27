@@ -1,6 +1,55 @@
 @ShmupCompanion.Api_HostAddress = http://localhost:5265
 
-GET {{ShmupCompanion.Api_HostAddress}}/game/
+### Add a new game
+POST {{ShmupCompanion.Api_HostAddress}}/games/
+Content-Type: application/json
+
+{
+  "name": "Rayden",
+  "developer": "Seibu Kaihatsu",
+  "releaseYear": 1990
+}
+
+###
+
+### Add a new game
+POST {{ShmupCompanion.Api_HostAddress}}/games/
+Content-Type: application/json
+
+{
+  "name": "Mushihimesama",
+  "developer": "Cave",
+  "releaseYear": 2004
+}
+
+###
+
+### Update it (fix the name)
+PUT {{ShmupCompanion.Api_HostAddress}}/games/3
+Content-Type: application/json
+
+{
+  "id": 3,
+  "name": "Raiden",
+  "developer": "Seibu Kaihatsu",
+  "releaseYear": 1990
+}
+
+###
+
+### Confirm the update
+GET {{ShmupCompanion.Api_HostAddress}}/games/1
+Accept: application/json
+
+###
+
+### Delete it
+DELETE {{ShmupCompanion.Api_HostAddress}}/games/1
+
+###
+
+### Confirm it's gone
+GET {{ShmupCompanion.Api_HostAddress}}/games/
 Accept: application/json
 
 ###

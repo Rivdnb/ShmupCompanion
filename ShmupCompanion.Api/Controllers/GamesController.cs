@@ -1,31 +1,60 @@
 using Microsoft.AspNetCore.Mvc;
+using ShmupCompanion.Api.Data;
+using ShmupCompanion.Api.Models;
+using ShmupCompanion.Api.Services;
 
 namespace ShmupCompanion.Api.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class GamesController : ControllerBase
     {
-        private static readonly string[] Games =
-        [
-            "Mushihimesama", "DoDonPachi", "Espgaluda II"
-        ];
-
-        private static readonly int[] ReleaseYears =
-        [
-            2004, 1997, 2005
-        ];
-
-        [HttpGet(Name = "GetGame")]
-        public IEnumerable<Game> Get()
+        private readonly GameService _gameService;
+        public GamesController(GameService gameService)
         {
-            return Enumerable.Range(0, 3).Select(index => new Game
-            {
-                Name = Games[index],
-                Id = index,
-                Developer = "Cave",
-                ReleaseYear = ReleaseYears[index]
-            }).ToArray();
+            _gameService = gameService;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<Game>>> GetAll()
+        {
+            return await _gameService.GetAllAsync();
+        }   
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Game>> Get(int id)
+        {
+            var game = await _gameService.GetAsync(id);
+            if (game == null) return NotFound();
+            return game;
+        }
+        [HttpPost]
+        public async Task<IActionResult> Create(Game game)
+        {
+            await _gameService.AddAsync(game);
+            return CreatedAtAction(nameof(Get), new { id = game.Id }, game);
+        }
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(Game game, int id)
+        {
+            if(game.Id != id)
+                return BadRequest();
+
+            bool updated = await _gameService.UpdateAsync(game);
+
+            if (!updated)
+                return NotFound();
+
+            return NoContent();
+        }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            bool deleted = await _gameService.DeleteAsync(id);
+
+            if(!deleted)
+                return NotFound();
+
+            return NoContent();
         }
     }
 }
