@@ -1,3 +1,5 @@
 <Solution>
   <Project Path="ShmupCompanion.Api/ShmupCompanion.Api.csproj" Id="4fdf137a-5be1-4ab6-b623-b14133d75be1" />
+  <Project Path="ShmupCompanion.Contracts/ShmupCompanion.Contracts.csproj" Id="cf6a705a-a230-4651-9ea3-45416f37a79d" />
+  <Project Path="ShmupCompanion.Web/ShmupCompanion.Web.csproj" Id="ee06a230-6b3d-4f9c-b596-3d8c1e882f97" />
 </Solution>

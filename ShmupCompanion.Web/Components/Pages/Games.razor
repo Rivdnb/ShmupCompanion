@@ -1,0 +1,38 @@
+﻿@page "/games"
+@using ShmupCompanion.Contracts.Games
+@using ShmupCompanion.Web.Services
+@inject GameApiService GameApiService
+
+<h1>Games</h1>
+
+@if (games == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    if(games.Count == 0)
+    {
+        <p>No games found.</p>
+    }
+       
+    else
+    {
+        @foreach (var game in games)
+        {
+            <p>
+                <NavLink href="@($"games/{game.Id}")"> @game.Name 
+                </NavLink> (@game.ReleaseYear), developed by @game.Developer
+            </p>
+        }
+    }
+}
+
+@code {
+    private List<GameDto>? games;
+
+    protected override async Task OnInitializedAsync()
+    {
+        games = await GameApiService.GetAllAsync();
+    }
+}

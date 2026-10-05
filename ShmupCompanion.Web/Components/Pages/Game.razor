@@ -1,0 +1,34 @@
+﻿@page "/games/{Id:int}"
+@using ShmupCompanion.Contracts.Games
+@using ShmupCompanion.Web.Services
+@inject GameApiService GameApiService
+@inject NavigationManager Navigation
+
+@if (isLoading)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <h1>@game.Name (@game.ReleaseYear), developed by @game.Developer</h1>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private GameDto? game;
+    private bool isLoading = true;
+
+    protected override void OnParametersSet() => Id = Id;
+
+    protected override async Task OnInitializedAsync()
+    {
+        game = await GameApiService.GetAsync(Id);
+        if(game == null)
+        {
+            Navigation.NavigateTo("/not-found");
+            return;
+        }
+        isLoading = false;
+    }
+}

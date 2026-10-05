@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ShmupCompanion.Api.Data;
 using ShmupCompanion.Api.Models;
+using ShmupCompanion.Contracts.Games;
 using SQLitePCL;
 using System.Xml.Linq;
 
@@ -13,14 +14,28 @@ namespace ShmupCompanion.Api.Services
         {
             _context = context;
         }
-        public async Task<List<Game>> GetAllAsync()
+        public async Task<List<GameDto>> GetAllAsync()
         {
-            return await _context.Games.ToListAsync();
+            var games = await _context.Games
+            .Select(game => new GameDto(
+                game.Id,
+                game.Name,
+                game.Developer,
+                game.ReleaseYear))
+            .ToListAsync();
+
+            return games;
         }
 
-        public async Task<Game?> GetAsync(int id)
+        public async Task<GameDto?> GetAsync(int id)
         {
-            return await _context.Games.FindAsync(id);
+            var game = await _context.Games.FindAsync(id);
+            if (game == null) return null;
+            return new GameDto(
+                game.Id,
+                game.Name,
+                game.Developer,
+                game.ReleaseYear);
         }
 
         public async Task AddAsync(Game game)

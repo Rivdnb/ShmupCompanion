@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using ShmupCompanion.Api.Data;
 using ShmupCompanion.Api.Models;
+using ShmupCompanion.Contracts.Games;
 using ShmupCompanion.Api.Services;
 
 namespace ShmupCompanion.Api.Controllers
@@ -16,12 +16,12 @@ namespace ShmupCompanion.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Game>>> GetAll()
+        public async Task<ActionResult<List<GameDto>>> GetAll()
         {
             return await _gameService.GetAllAsync();
         }   
         [HttpGet("{id}")]
-        public async Task<ActionResult<Game>> Get(int id)
+        public async Task<ActionResult<GameDto>> Get(int id)
         {
             var game = await _gameService.GetAsync(id);
             if (game == null) return NotFound();
