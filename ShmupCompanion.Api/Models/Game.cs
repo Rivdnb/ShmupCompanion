@@ -5,6 +5,6 @@ namespace ShmupCompanion.Api.Models
         public int Id { get; set; }
         public required string Name { get; set; }
         public required string Developer { get; set; }
-        public int ReleaseYear { get; set; }
+        public required int ReleaseYear { get; set; }
     }
 }

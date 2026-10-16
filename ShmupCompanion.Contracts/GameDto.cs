@@ -1,8 +1,9 @@
-﻿namespace ShmupCompanion.Contracts.Games;
-
-public record GameDto(
-    int Id,
-    string Name,
-    string Developer,
-    int ReleaseYear
-);
+﻿namespace ShmupCompanion.Contracts.Game
+{
+     public record class GameDto(
+        int Id,
+        string Name,
+        string Developer,
+        int ReleaseYear
+    );
+}

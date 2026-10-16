@@ -1,5 +1,5 @@
 ﻿@page "/games"
-@using ShmupCompanion.Contracts.Games
+@using ShmupCompanion.Contracts.Game
 @using ShmupCompanion.Web.Services
 @inject GameApiService GameApiService
 
@@ -26,13 +26,43 @@ else
             </p>
         }
     }
+
+    <h2>Create game</h2>
+    <EditForm Model=@newGame OnValidSubmit=@HandleSubmit>
+        <DataAnnotationsValidator/>
+        <div>
+            <label>Name</label>
+            <InputText @bind-Value="newGame.Name" placeholder="Dodonpachi"/>
+            <ValidationMessage For="@(() => newGame.Name)"/>
+        </div>
+
+        <div>
+            <label>Developer</label>
+            <InputText @bind-Value="newGame.Developer" placeholder ="CAVE"/>
+            <ValidationMessage For="@(() => newGame.Developer)"/>
+        </div>
+
+        <div>
+            <label>Release year</label>
+            <InputNumber @bind-Value="newGame.ReleaseYear"/>
+            <ValidationMessage For="@(() => newGame.ReleaseYear)"/>
+        </div>
+
+        <button type="submit">Submit</button>
+    </EditForm>
 }
 
 @code {
     private List<GameDto>? games;
+    private GameRequest newGame = new GameRequest();
 
     protected override async Task OnInitializedAsync()
     {
         games = await GameApiService.GetAllAsync();
     }
+
+    private async Task HandleSubmit()
+    {
+        GameDto? game = await GameApiService.PostAsync(newGame);
+	}
 }

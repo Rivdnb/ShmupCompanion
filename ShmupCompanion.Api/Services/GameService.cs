@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ShmupCompanion.Api.Data;
 using ShmupCompanion.Api.Models;
-using ShmupCompanion.Contracts.Games;
+using ShmupCompanion.Contracts.Game;
 using SQLitePCL;
 using System.Xml.Linq;
 
@@ -38,13 +38,25 @@ namespace ShmupCompanion.Api.Services
                 game.ReleaseYear);
         }
 
-        public async Task AddAsync(Game game)
+        public async Task<GameDto> AddAsync(GameRequest request)
         {
+            Game game = new Game
+            {
+                Name = request.Name,
+                Developer = request.Developer,
+                ReleaseYear = request.ReleaseYear
+            };
             _context.Games.Add(game);
             await _context.SaveChangesAsync();
+            return new GameDto(
+                game.Id,
+                game.Name,
+                game.Developer,
+                game.ReleaseYear
+            );
         }
 
-        public async Task<bool> UpdateAsync(Game game)
+        public async Task<bool> UpdateAsync(Game game) // todo: transfer to gamedto
         {
             var existing = await _context.Games.FindAsync(game.Id);
 

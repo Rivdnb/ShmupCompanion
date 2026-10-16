@@ -1,4 +1,4 @@
-﻿using ShmupCompanion.Contracts.Games;
+﻿using ShmupCompanion.Contracts.Game;
 using System.Net;
 
 namespace ShmupCompanion.Web.Services
@@ -25,6 +25,15 @@ namespace ShmupCompanion.Web.Services
             {
                 return null;
             }
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadFromJsonAsync<GameDto>();
+        }
+
+        public async Task<GameDto?> PostAsync(GameRequest request) // TODO
+        {
+            var response = await _httpClient.PostAsJsonAsync("games", request);
 
             response.EnsureSuccessStatusCode();
 

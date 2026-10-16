@@ -1,5 +1,5 @@
 ﻿@page "/games/{Id:int}"
-@using ShmupCompanion.Contracts.Games
+@using ShmupCompanion.Contracts.Game
 @using ShmupCompanion.Web.Services
 @inject GameApiService GameApiService
 @inject NavigationManager Navigation
@@ -10,8 +10,9 @@
 }
 else
 {
-    <h1>@game.Name (@game.ReleaseYear), developed by @game.Developer</h1>
+    <h1>@game!.Name (@game.ReleaseYear), developed by @game.Developer</h1>
 }
+
 
 @code {
     [Parameter]

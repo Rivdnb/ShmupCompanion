@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using ShmupCompanion.Api.Models;
-using ShmupCompanion.Contracts.Games;
+using ShmupCompanion.Contracts.Game;
 using ShmupCompanion.Api.Services;
 
 namespace ShmupCompanion.Api.Controllers
@@ -28,9 +28,9 @@ namespace ShmupCompanion.Api.Controllers
             return game;
         }
         [HttpPost]
-        public async Task<IActionResult> Create(Game game)
+        public async Task<ActionResult<GameDto>> Create(GameRequest request)
         {
-            await _gameService.AddAsync(game);
+            var game = await _gameService.AddAsync(request);
             return CreatedAtAction(nameof(Get), new { id = game.Id }, game);
         }
         [HttpPut("{id}")]
