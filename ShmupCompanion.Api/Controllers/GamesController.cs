@@ -34,12 +34,9 @@ namespace ShmupCompanion.Api.Controllers
             return CreatedAtAction(nameof(Get), new { id = game.Id }, game);
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Game game, int id)
+        public async Task<IActionResult> Update(GameRequest request, int id)
         {
-            if(game.Id != id)
-                return BadRequest();
-
-            bool updated = await _gameService.UpdateAsync(game);
+            bool updated = await _gameService.UpdateAsync(request, id);
 
             if (!updated)
                 return NotFound();

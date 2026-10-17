@@ -2,6 +2,7 @@
 @using ShmupCompanion.Contracts.Game
 @using ShmupCompanion.Web.Services
 @inject GameApiService GameApiService
+@inject NavigationManager Navigation
 
 <h1>Games</h1>
 
@@ -32,7 +33,7 @@ else
         <DataAnnotationsValidator/>
         <div>
             <label>Name</label>
-            <InputText @bind-Value="newGame.Name" placeholder="Dodonpachi"/>
+            <InputText @bind-Value="newGame.Name" placeholder="DoDonPachi"/>
             <ValidationMessage For="@(() => newGame.Name)"/>
         </div>
 
@@ -64,5 +65,6 @@ else
     private async Task HandleSubmit()
     {
         GameDto? game = await GameApiService.PostAsync(newGame);
-	}
+        Navigation.NavigateTo("games", true);
+    }
 }

@@ -1,4 +1,5 @@
-﻿using ShmupCompanion.Contracts.Game;
+﻿using Microsoft.AspNetCore.Mvc;
+using ShmupCompanion.Contracts.Game;
 using System.Net;
 
 namespace ShmupCompanion.Web.Services
@@ -31,13 +32,25 @@ namespace ShmupCompanion.Web.Services
             return await response.Content.ReadFromJsonAsync<GameDto>();
         }
 
-        public async Task<GameDto?> PostAsync(GameRequest request) // TODO
+        public async Task<GameDto?> PostAsync(GameRequest request)
         {
             var response = await _httpClient.PostAsJsonAsync("games", request);
 
             response.EnsureSuccessStatusCode();
 
             return await response.Content.ReadFromJsonAsync<GameDto>();
+        }
+        public async Task UpdateAsync(GameRequest request, int id)
+        {
+            var response = await _httpClient.PutAsJsonAsync($"games/{id}", request);
+
+            response.EnsureSuccessStatusCode();
+        }
+        public async Task DeleteAsync(int id)
+        {
+            var response = await _httpClient.DeleteAsync($"games/{id}");
+
+            response.EnsureSuccessStatusCode();
         }
     }
 }

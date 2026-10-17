@@ -11,14 +11,45 @@
 else
 {
     <h1>@game!.Name (@game.ReleaseYear), developed by @game.Developer</h1>
-}
 
+    <h2>Update game</h2>
+    <EditForm Model=@updatedGame OnValidSubmit=@HandleSubmit>
+        <DataAnnotationsValidator />
+        <div>
+            <label>Name</label>
+            <InputText @bind-Value="updatedGame.Name" placeholder=@($"{game.Name}")/>
+            <ValidationMessage For="@(() => updatedGame.Name)" />
+        </div>
+
+        <div>
+            <label>Developer</label>
+            <InputText @bind-Value="updatedGame.Developer" placeholder=@($"{game.Developer}") />
+            <ValidationMessage For="@(() => updatedGame.Developer)" />
+        </div>
+
+        <div>
+            <label>Release year</label>
+            <InputNumber @bind-Value="updatedGame.ReleaseYear" />
+            <ValidationMessage For="@(() => updatedGame.ReleaseYear)" />
+        </div>
+
+        <button type="submit">Submit</button>
+    </EditForm>
+
+    <h2>Delete game</h2>
+    <p>
+        <button @onclick="DeleteGame">
+            Delete
+        </button>
+    </p>
+}
 
 @code {
     [Parameter]
     public int Id { get; set; }
     private GameDto? game;
     private bool isLoading = true;
+    private GameRequest updatedGame = new GameRequest();
 
     protected override void OnParametersSet() => Id = Id;
 
@@ -31,5 +62,19 @@ else
             return;
         }
         isLoading = false;
+        updatedGame.ReleaseYear = game.ReleaseYear;
     }
+
+    private async Task HandleSubmit()
+    {
+        await GameApiService.UpdateAsync(updatedGame, Id);
+        Navigation.NavigateTo($"games/{Id}", true);
+    }
+
+    private async Task DeleteGame()
+    {
+        await GameApiService.DeleteAsync(Id);
+        Navigation.NavigateTo("/games");
+    }
+
 }

@@ -56,14 +56,16 @@ namespace ShmupCompanion.Api.Services
             );
         }
 
-        public async Task<bool> UpdateAsync(Game game) // todo: transfer to gamedto
+        public async Task<bool> UpdateAsync(GameRequest request, int id)
         {
-            var existing = await _context.Games.FindAsync(game.Id);
+            var existing = await _context.Games.FindAsync(id);
 
             if (existing == null)
                 return false;
 
-            existing.Name = game.Name;
+            existing.Name = request.Name;
+            existing.Developer = request.Developer;
+            existing.ReleaseYear = request.ReleaseYear;
 
             await _context.SaveChangesAsync();
 
