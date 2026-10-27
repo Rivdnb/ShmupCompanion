@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using ShmupCompanion.Api.Models;
-using ShmupCompanion.Contracts.Game;
+using ShmupCompanion.Contracts;
 using ShmupCompanion.Api.Services;
 
 namespace ShmupCompanion.Api.Controllers

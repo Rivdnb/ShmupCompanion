@@ -24,10 +24,12 @@ namespace ShmupCompanion.Api.Migrations
 
                     b.Property<string>("Developer")
                         .IsRequired()
+                        .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
                     b.Property<int>("ReleaseYear")
@@ -36,6 +38,43 @@ namespace ShmupCompanion.Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Games");
+                });
+
+            modelBuilder.Entity("ShmupCompanion.Api.Models.Run", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("GameId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameId");
+
+                    b.ToTable("Runs");
+                });
+
+            modelBuilder.Entity("ShmupCompanion.Api.Models.Run", b =>
+                {
+                    b.HasOne("ShmupCompanion.Api.Models.Game", "Game")
+                        .WithMany("Runs")
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Game");
+                });
+
+            modelBuilder.Entity("ShmupCompanion.Api.Models.Game", b =>
+                {
+                    b.Navigation("Runs");
                 });
 #pragma warning restore 612, 618
         }

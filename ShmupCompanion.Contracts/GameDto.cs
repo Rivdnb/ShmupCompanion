@@ -1,6 +1,6 @@
-﻿namespace ShmupCompanion.Contracts.Game
+﻿namespace ShmupCompanion.Contracts
 {
-     public record class GameDto(
+     public record GameDto(
         int Id,
         string Name,
         string Developer,

@@ -1,0 +1,76 @@
+﻿@page "/games/{GameId:int}/runs/{Id:int}"
+@using ShmupCompanion.Contracts
+@using ShmupCompanion.Web.Services
+@inject GameApiService GameApiService
+@inject RunApiService RunApiService
+@inject NavigationManager Navigation
+
+@if (isLoading)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <h1>@run!.Name</h1>
+
+    <h2>Update run</h2>
+    <EditForm Model=@updateRun OnValidSubmit=@HandleSubmit>
+        <DataAnnotationsValidator />
+        <div>
+            <label>Name</label>
+            <InputText @bind-Value="updateRun.Name" placeholder=@($"{run.Name}") />
+            <ValidationMessage For="@(() => updateRun.Name)" />
+        </div>
+
+        <button type="submit">Submit</button>
+    </EditForm>
+
+    <h2>Delete run</h2>
+    <p>
+        <button @onclick="DeleteGame">
+            Delete
+        </button>
+    </p>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    [Parameter]
+    public int GameId { get; set; }
+    private RunDto? run;
+    private bool isLoading = true;
+    private RunRequest updateRun = new RunRequest();
+
+
+    protected override void OnParametersSet()
+    {
+        Id = Id;
+        GameId = GameId;
+    } 
+
+    protected override async Task OnInitializedAsync()
+    {
+        run = await RunApiService.GetAsync(GameId, Id);
+        if (run == null)
+        {
+            Navigation.NavigateTo("/not-found");
+            return;
+        }
+        isLoading = false;
+
+    }
+
+    private async Task HandleSubmit()
+    {
+        await RunApiService.UpdateAsync(updateRun, GameId, Id);
+        Navigation.NavigateTo($"games/{GameId}/runs/{Id}", true);
+    }
+
+    private async Task DeleteGame()
+    {
+        await RunApiService.DeleteAsync(GameId, Id);
+        Navigation.NavigateTo($"/games/{GameId}");
+    }
+
+}

@@ -12,6 +12,7 @@ builder.Services.AddDbContext<ShmupCompanionContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<GameService>();
+builder.Services.AddScoped<RunService>();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();

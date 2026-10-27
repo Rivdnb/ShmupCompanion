@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ShmupCompanion.Contracts.Game
+namespace ShmupCompanion.Contracts
 {
     public class GameRequest
     {

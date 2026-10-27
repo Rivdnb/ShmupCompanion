@@ -1,7 +1,8 @@
 ﻿@page "/games/{Id:int}"
-@using ShmupCompanion.Contracts.Game
+@using ShmupCompanion.Contracts
 @using ShmupCompanion.Web.Services
 @inject GameApiService GameApiService
+@inject RunApiService RunApiService
 @inject NavigationManager Navigation
 
 @if (isLoading)
@@ -12,25 +13,44 @@ else
 {
     <h1>@game!.Name (@game.ReleaseYear), developed by @game.Developer</h1>
 
-    <h2>Update game</h2>
-    <EditForm Model=@updatedGame OnValidSubmit=@HandleSubmit>
+    <h2>Your Runs</h2>
+    @foreach (var run in runs)
+    {
+        <p>
+            <NavLink href="@($"games/{game.Id}/runs/{run.Id}")">@run.Name</NavLink>
+        </p>
+    }
+    <h3>Create Run</h3>
+    <EditForm Model=@newRun OnValidSubmit=@HandleSubmitRun>
         <DataAnnotationsValidator />
         <div>
             <label>Name</label>
-            <InputText @bind-Value="updatedGame.Name" placeholder=@($"{game.Name}")/>
-            <ValidationMessage For="@(() => updatedGame.Name)" />
+            <InputText @bind-Value="newRun.Name" placeholder="My first 1CC" />
+            <ValidationMessage For="@(() => newRun.Name)" />
+        </div>
+
+        <button type="submit">Submit</button>
+    </EditForm>
+
+    <h2>Update game</h2>
+    <EditForm Model=@updateGame OnValidSubmit=@HandleSubmitGame>
+        <DataAnnotationsValidator />
+        <div>
+            <label>Name</label>
+            <InputText @bind-Value="updateGame.Name" placeholder=@($"{game.Name}")/>
+            <ValidationMessage For="@(() => updateGame.Name)" />
         </div>
 
         <div>
             <label>Developer</label>
-            <InputText @bind-Value="updatedGame.Developer" placeholder=@($"{game.Developer}") />
-            <ValidationMessage For="@(() => updatedGame.Developer)" />
+            <InputText @bind-Value="updateGame.Developer" placeholder=@($"{game.Developer}") />
+            <ValidationMessage For="@(() => updateGame.Developer)" />
         </div>
 
         <div>
             <label>Release year</label>
-            <InputNumber @bind-Value="updatedGame.ReleaseYear" />
-            <ValidationMessage For="@(() => updatedGame.ReleaseYear)" />
+            <InputNumber @bind-Value="updateGame.ReleaseYear" />
+            <ValidationMessage For="@(() => updateGame.ReleaseYear)" />
         </div>
 
         <button type="submit">Submit</button>
@@ -48,8 +68,10 @@ else
     [Parameter]
     public int Id { get; set; }
     private GameDto? game;
+    private List<RunDto> runs = [];
     private bool isLoading = true;
-    private GameRequest updatedGame = new GameRequest();
+    private RunRequest newRun = new RunRequest();
+    private GameRequest updateGame = new GameRequest();
 
     protected override void OnParametersSet() => Id = Id;
 
@@ -61,13 +83,21 @@ else
             Navigation.NavigateTo("/not-found");
             return;
         }
+        runs = await RunApiService.GetAllForGameAsync(game.Id);
+        updateGame.ReleaseYear = game.ReleaseYear; // for correctly showcasing the placeholder value instead of 0
         isLoading = false;
-        updatedGame.ReleaseYear = game.ReleaseYear;
+
     }
 
-    private async Task HandleSubmit()
+    private async Task HandleSubmitRun()
     {
-        await GameApiService.UpdateAsync(updatedGame, Id);
+        RunDto? run = await RunApiService.PostAsync(newRun, Id);
+        Navigation.NavigateTo($"games/{Id}", true);
+    }
+
+    private async Task HandleSubmitGame()
+    {
+        await GameApiService.UpdateAsync(updateGame, Id);
         Navigation.NavigateTo($"games/{Id}", true);
     }
 

@@ -9,5 +9,6 @@ namespace ShmupCompanion.Api.Data
             : base(options) { }
 
         public DbSet<Game> Games => Set<Game>();
+        public DbSet<Run> Runs => Set<Run>();
     }
 }

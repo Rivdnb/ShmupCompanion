@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ShmupCompanion.Contracts.Game;
+using ShmupCompanion.Contracts;
 using System.Net;
 
 namespace ShmupCompanion.Web.Services

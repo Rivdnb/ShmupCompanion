@@ -1,9 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ShmupCompanion.Api.Data;
 using ShmupCompanion.Api.Models;
-using ShmupCompanion.Contracts.Game;
-using SQLitePCL;
-using System.Xml.Linq;
+using ShmupCompanion.Contracts;
 
 namespace ShmupCompanion.Api.Services
 {

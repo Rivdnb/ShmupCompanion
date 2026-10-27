@@ -13,6 +13,7 @@ builder.Services.AddHttpClient("ShmupApi", client =>
 });
 
 builder.Services.AddScoped<GameApiService>();
+builder.Services.AddScoped<RunApiService>();
 
 var app = builder.Build();
 
