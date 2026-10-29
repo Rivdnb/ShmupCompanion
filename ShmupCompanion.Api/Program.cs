@@ -13,6 +13,7 @@ builder.Services.AddDbContext<ShmupCompanionContext>(options =>
 
 builder.Services.AddScoped<GameService>();
 builder.Services.AddScoped<RunService>();
+builder.Services.AddScoped<NoteService>();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();

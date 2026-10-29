@@ -17,7 +17,7 @@ else
     @foreach (var run in runs)
     {
         <p>
-            <NavLink href="@($"games/{game.Id}/runs/{run.Id}")">@run.Name</NavLink>
+            <NavLink href="@($"games/{Id}/runs/{run.Id}")">@run.Name</NavLink>
         </p>
     }
     <h3>Create Run</h3>
@@ -29,7 +29,7 @@ else
             <ValidationMessage For="@(() => newRun.Name)" />
         </div>
 
-        <button type="submit">Submit</button>
+        <button type="submit">Create</button>
     </EditForm>
 
     <h2>Update game</h2>
@@ -53,7 +53,7 @@ else
             <ValidationMessage For="@(() => updateGame.ReleaseYear)" />
         </div>
 
-        <button type="submit">Submit</button>
+        <button type="submit">Update</button>
     </EditForm>
 
     <h2>Delete game</h2>

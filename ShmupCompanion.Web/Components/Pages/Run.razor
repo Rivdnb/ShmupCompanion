@@ -3,6 +3,7 @@
 @using ShmupCompanion.Web.Services
 @inject GameApiService GameApiService
 @inject RunApiService RunApiService
+@inject NoteApiService NoteApiService
 @inject NavigationManager Navigation
 
 @if (isLoading)
@@ -13,8 +14,28 @@ else
 {
     <h1>@run!.Name</h1>
 
+    <h2>Notes</h2>
+    @foreach (var note in notes)
+    {
+        <p>
+            <NavLink href="@($"games/{GameId}/runs/{Id}/notes/{note.Id}")">@note.Name</NavLink>
+        </p>
+    }
+
+    <h3>Create Note</h3>
+    <EditForm Model=@newNote OnValidSubmit=@HandleCreateNote>
+        <DataAnnotationsValidator />
+        <div>
+            <label>Name</label>
+            <InputText @bind-Value="newNote.Name" placeholder="Stage 1 strategy" />
+            <ValidationMessage For="@(() => newNote.Name)" />
+        </div>
+
+        <button type="submit">Create</button>
+    </EditForm>
+
     <h2>Update run</h2>
-    <EditForm Model=@updateRun OnValidSubmit=@HandleSubmit>
+    <EditForm Model=@updateRun OnValidSubmit=@HandleUpdateRun>
         <DataAnnotationsValidator />
         <div>
             <label>Name</label>
@@ -22,7 +43,7 @@ else
             <ValidationMessage For="@(() => updateRun.Name)" />
         </div>
 
-        <button type="submit">Submit</button>
+        <button type="submit">Update</button>
     </EditForm>
 
     <h2>Delete run</h2>
@@ -39,8 +60,10 @@ else
     [Parameter]
     public int GameId { get; set; }
     private RunDto? run;
+    private List<NoteDto> notes = [];
     private bool isLoading = true;
     private RunRequest updateRun = new RunRequest();
+    private NoteRequest newNote = new NoteRequest();
 
 
     protected override void OnParametersSet()
@@ -57,11 +80,17 @@ else
             Navigation.NavigateTo("/not-found");
             return;
         }
+        notes = await NoteApiService.GetAllForRunAsync(GameId, Id);
         isLoading = false;
-
     }
 
-    private async Task HandleSubmit()
+    private async Task HandleCreateNote()
+    {
+        NoteDto? note = await NoteApiService.PostAsync(newNote, GameId, Id);
+        Navigation.NavigateTo($"games/{GameId}/runs/{Id}", true);
+    }
+
+    private async Task HandleUpdateRun()
     {
         await RunApiService.UpdateAsync(updateRun, GameId, Id);
         Navigation.NavigateTo($"games/{GameId}/runs/{Id}", true);

@@ -13,6 +13,6 @@ namespace ShmupCompanion.Api.Models
 
         public Game Game { get; set; } = null!;
 
-        //public List<Note>? Notes { get; set; }
+        public List<Note>? Notes { get; set; }
     }
 }

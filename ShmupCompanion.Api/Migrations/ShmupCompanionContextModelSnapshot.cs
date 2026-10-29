@@ -40,6 +40,31 @@ namespace ShmupCompanion.Api.Migrations
                     b.ToTable("Games");
                 });
 
+            modelBuilder.Entity("ShmupCompanion.Api.Models.Note", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("RunId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RunId");
+
+                    b.ToTable("Notes");
+                });
+
             modelBuilder.Entity("ShmupCompanion.Api.Models.Run", b =>
                 {
                     b.Property<int>("Id")
@@ -61,6 +86,17 @@ namespace ShmupCompanion.Api.Migrations
                     b.ToTable("Runs");
                 });
 
+            modelBuilder.Entity("ShmupCompanion.Api.Models.Note", b =>
+                {
+                    b.HasOne("ShmupCompanion.Api.Models.Run", "Run")
+                        .WithMany("Notes")
+                        .HasForeignKey("RunId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Run");
+                });
+
             modelBuilder.Entity("ShmupCompanion.Api.Models.Run", b =>
                 {
                     b.HasOne("ShmupCompanion.Api.Models.Game", "Game")
@@ -75,6 +111,11 @@ namespace ShmupCompanion.Api.Migrations
             modelBuilder.Entity("ShmupCompanion.Api.Models.Game", b =>
                 {
                     b.Navigation("Runs");
+                });
+
+            modelBuilder.Entity("ShmupCompanion.Api.Models.Run", b =>
+                {
+                    b.Navigation("Notes");
                 });
 #pragma warning restore 612, 618
         }
