@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ShmupCompanion.Contracts;
 using System.Net;
+using Bit.BlazorUI;
 
 namespace ShmupCompanion.Web.Services
 {
@@ -51,6 +52,23 @@ namespace ShmupCompanion.Web.Services
             var response = await _httpClient.DeleteAsync($"games/{gameId}/runs/{runId}/notes/{id}");
 
             response.EnsureSuccessStatusCode();
+        }
+
+        public async Task<string?> UploadImageAsync(int Id, BitRichTextEditorImageUpload image)
+        {
+            using var content = new MultipartFormDataContent();
+            using var imageContent = new ByteArrayContent(image.Content);
+
+            imageContent.Headers.ContentType =
+                 new System.Net.Http.Headers.MediaTypeHeaderValue(image.ContentType);
+
+            content.Add(imageContent, "file", image.FileName);
+
+            var response = await _httpClient.PostAsync($"notes/{Id}/images", content);
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadFromJsonAsync<string>(); // returns URL
         }
     }
 }

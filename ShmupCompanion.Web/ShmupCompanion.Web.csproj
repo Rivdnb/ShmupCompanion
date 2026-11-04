@@ -8,6 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Bit.BlazorUI" Version="10.7.0" />
+    <PackageReference Include="Bit.BlazorUI.Extras" Version="10.7.0" />
+    <PackageReference Include="Bit.BlazorUI.Icons" Version="10.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ShmupCompanion.Contracts\ShmupCompanion.Contracts.csproj" />
   </ItemGroup>
 

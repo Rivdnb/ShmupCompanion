@@ -1,3 +1,4 @@
+using Bit.BlazorUI;
 using ShmupCompanion.Web.Components;
 using ShmupCompanion.Web.Services;
 
@@ -15,6 +16,8 @@ builder.Services.AddHttpClient("ShmupApi", client =>
 builder.Services.AddScoped<GameApiService>();
 builder.Services.AddScoped<RunApiService>();
 builder.Services.AddScoped<NoteApiService>();
+builder.Services.AddBitBlazorUIServices();
+builder.Services.AddBitBlazorUIExtrasServices();
 
 var app = builder.Build();
 

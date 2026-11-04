@@ -1,0 +1,74 @@
+﻿@page "/games/{GameId:int}/runs/{runId:int}/notes/{Id:int}/test"
+@using ShmupCompanion.Contracts
+@using ShmupCompanion.Web.Services
+@inject GameApiService GameApiService
+@inject RunApiService RunApiService
+@inject NoteApiService NoteApiService
+@inject NavigationManager Navigation
+
+@if (isLoading)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <h1>@note!.Name</h1>
+    <BitButton ButtonType="BitButtonType.Submit" onclick="HandleSubmit">Save Changes</BitButton>
+    <div>
+        <BitRichTextEditor @bind-Value="updateNote.Text"/>
+        @*//OnImageUpload="HandleImageUpload"
+            MaxImageSize="2097152" />*@
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    [Parameter]
+    public int GameId { get; set; }
+    [Parameter]
+    public int RunId { get; set; }
+    private NoteDto? note;
+    private bool isLoading = true;
+    private NoteRequest updateNote = new NoteRequest();
+    private string? imageHtml = "";
+
+
+    protected override void OnParametersSet()
+    {
+        Id = Id;
+        GameId = GameId;
+        RunId = RunId;
+    } 
+
+    protected override async Task OnInitializedAsync()
+    {
+        note = await NoteApiService.GetAsync(GameId, RunId, Id);
+        if (note == null)
+        {
+            Navigation.NavigateTo("/not-found");
+            return;
+        }
+        updateNote.Name = note.Name;
+        updateNote.Text = note.Text;
+        isLoading = false;
+    }
+
+    private async Task HandleSubmit()
+    {
+        await NoteApiService.UpdateAsync(updateNote, GameId, RunId, Id);
+        Navigation.NavigateTo($"games/{GameId}/runs/{RunId}/notes/{Id}", true);
+    }
+
+    private async Task DeleteGame()
+    {
+        await NoteApiService.DeleteAsync(GameId, RunId, Id);
+        Navigation.NavigateTo($"/games/{GameId}/runs/{RunId}");
+    }
+
+    private async Task<string?> HandleImageUpload(BitRichTextEditorImageUpload image)
+    {
+            return await NoteApiService.UploadImageAsync(Id, image);
+    }
+
+}

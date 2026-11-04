@@ -19,4 +19,8 @@
     <ProjectReference Include="..\ShmupCompanion.Contracts\ShmupCompanion.Contracts.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\NoteImages\" />
+  </ItemGroup>
+
 </Project>
