@@ -7,6 +7,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+builder.Services.AddServerSideBlazor()
+    .AddHubOptions(options =>
+    {
+        // Increase limit to 5MB
+        options.MaximumReceiveMessageSize = 5 * 1024 * 1024;
+    });
 
 builder.Services.AddHttpClient("ShmupApi", client =>
 {

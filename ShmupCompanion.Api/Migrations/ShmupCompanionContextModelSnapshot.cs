@@ -65,6 +65,34 @@ namespace ShmupCompanion.Api.Migrations
                     b.ToTable("Notes");
                 });
 
+            modelBuilder.Entity("ShmupCompanion.Api.Models.NoteImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("NoteId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NoteId");
+
+                    b.ToTable("NoteImages");
+                });
+
             modelBuilder.Entity("ShmupCompanion.Api.Models.Run", b =>
                 {
                     b.Property<int>("Id")
@@ -97,6 +125,17 @@ namespace ShmupCompanion.Api.Migrations
                     b.Navigation("Run");
                 });
 
+            modelBuilder.Entity("ShmupCompanion.Api.Models.NoteImage", b =>
+                {
+                    b.HasOne("ShmupCompanion.Api.Models.Note", "Note")
+                        .WithMany("Images")
+                        .HasForeignKey("NoteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Note");
+                });
+
             modelBuilder.Entity("ShmupCompanion.Api.Models.Run", b =>
                 {
                     b.HasOne("ShmupCompanion.Api.Models.Game", "Game")
@@ -111,6 +150,11 @@ namespace ShmupCompanion.Api.Migrations
             modelBuilder.Entity("ShmupCompanion.Api.Models.Game", b =>
                 {
                     b.Navigation("Runs");
+                });
+
+            modelBuilder.Entity("ShmupCompanion.Api.Models.Note", b =>
+                {
+                    b.Navigation("Images");
                 });
 
             modelBuilder.Entity("ShmupCompanion.Api.Models.Run", b =>

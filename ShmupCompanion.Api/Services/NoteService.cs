@@ -1,16 +1,23 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ShmupCompanion.Api.Data;
 using ShmupCompanion.Api.Models;
+using ShmupCompanion.Api.Interfaces;
 using ShmupCompanion.Contracts;
+
 
 namespace ShmupCompanion.Api.Services
 {
     public class NoteService
     {
         private readonly ShmupCompanionContext _context;
-        public NoteService(ShmupCompanionContext context)
+
+        private readonly IImageStorageService _imageStorage;
+        public NoteService(
+            ShmupCompanionContext context, 
+            IImageStorageService imageStorage)
         {
             _context = context;
+            _imageStorage = imageStorage;
         }
         public async Task<List<NoteDto>> GetAllForRunAsync(int runId)
         {
@@ -90,6 +97,33 @@ namespace ShmupCompanion.Api.Services
             await _context.SaveChangesAsync();
 
             return true;
+        }
+
+        public async Task<int?> AddImageAsync(int noteId, IFormFile image)
+        { // TODO: implement and check
+            var note = await _context.Notes
+                .FindAsync(noteId);
+
+            if (note == null)
+                return null;
+
+            // Validate file
+
+            string fileName = await _imageStorage.SaveAsync(image); // (GUID).(extension)
+
+            var noteImage = new NoteImage
+            {
+                NoteId = noteId,
+                FileName = image.FileName,
+                ContentType = image.ContentType,
+                FilePath = fileName
+            };
+
+            _context.NoteImages.Add(noteImage);
+
+            await _context.SaveChangesAsync();
+
+            return noteImage.Id;
         }
     }
 }

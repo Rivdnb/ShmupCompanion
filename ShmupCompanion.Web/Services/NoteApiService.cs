@@ -54,7 +54,8 @@ namespace ShmupCompanion.Web.Services
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task<string?> UploadImageAsync(int Id, BitRichTextEditorImageUpload image)
+        public async Task<string?> UploadImageAsync(int gameId, int runId, 
+            int id, BitRichTextEditorImageUpload image)
         {
             using var content = new MultipartFormDataContent();
             using var imageContent = new ByteArrayContent(image.Content);
@@ -62,13 +63,14 @@ namespace ShmupCompanion.Web.Services
             imageContent.Headers.ContentType =
                  new System.Net.Http.Headers.MediaTypeHeaderValue(image.ContentType);
 
-            content.Add(imageContent, "file", image.FileName);
+            content.Add(imageContent, "image", image.FileName);
 
-            var response = await _httpClient.PostAsync($"notes/{Id}/images", content);
+            var response = await _httpClient.PostAsync(
+                $"games/{gameId}/runs/{runId}/notes/{id}/images", content);
 
             response.EnsureSuccessStatusCode();
 
-            return await response.Content.ReadFromJsonAsync<string>(); // returns URL
+            return await response.Content.ReadAsStringAsync(); // returns URL
         }
     }
 }

@@ -15,10 +15,14 @@ else
     <h1>@note!.Name</h1>
     <BitButton ButtonType="BitButtonType.Submit" onclick="HandleSubmit">Save Changes</BitButton>
     <div>
-        <BitRichTextEditor @bind-Value="updateNote.Text"/>
-        @*//OnImageUpload="HandleImageUpload"
-            MaxImageSize="2097152" />*@
+        <BitRichTextEditor @bind-Value="updateNote.Text" 
+                           OnImageUpload="HandleImageUpload"/>
     </div>
+}
+
+@if (lastUpload is not null)
+{
+    <div>Last upload: <b>@lastUpload</b></div>
 }
 
 @code {
@@ -31,7 +35,7 @@ else
     private NoteDto? note;
     private bool isLoading = true;
     private NoteRequest updateNote = new NoteRequest();
-    private string? imageHtml = "";
+    private string? lastUpload;
 
 
     protected override void OnParametersSet()
@@ -68,7 +72,9 @@ else
 
     private async Task<string?> HandleImageUpload(BitRichTextEditorImageUpload image)
     {
-            return await NoteApiService.UploadImageAsync(Id, image);
+        lastUpload = $"{image.FileName} ({image.ContentType}, {image.Content.Length:N0} bytes)";
+        return await NoteApiService.UploadImageAsync(GameId, RunId, Id, image);
+        // todo: also submit edited note containing image url here?
     }
 
 }

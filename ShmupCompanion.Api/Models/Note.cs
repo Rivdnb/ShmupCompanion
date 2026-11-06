@@ -15,5 +15,7 @@ namespace ShmupCompanion.Api.Models
 
         public string Text { get; set; } = string.Empty;
 
+        public List<NoteImage> Images { get; set; } = [];
+
     }
 }

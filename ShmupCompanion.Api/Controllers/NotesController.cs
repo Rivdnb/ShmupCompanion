@@ -6,7 +6,7 @@ using ShmupCompanion.Api.Services;
 namespace ShmupCompanion.Api.Controllers
 {
     [ApiController]
-    [Route("/games/{gameId:int}/runs/{runId:int}/notes")]
+    [Route("games/{gameId:int}/runs/{runId:int}/notes")]
     public class NotesController : ControllerBase
     {
         private readonly NoteService _noteService;
@@ -16,26 +16,30 @@ namespace ShmupCompanion.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<NoteDto>>> GetAll(int gameId, int runId)
+        public async Task<ActionResult<List<NoteDto>>> GetAll(
+            int gameId, int runId)
         {
             return await _noteService.GetAllForRunAsync(runId);
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<NoteDto>> Get(int gameId, int runId, int id)
+        public async Task<ActionResult<NoteDto>> Get(
+            int gameId, int runId, int id)
         {
             var note = await _noteService.GetAsync(runId, id);
             if (note == null) return NotFound();
             return note;
         }
         [HttpPost]
-        public async Task<ActionResult<NoteDto>> Create(NoteRequest request, int gameId, int runId)
+        public async Task<ActionResult<NoteDto>> Create(
+            NoteRequest request, int gameId, int runId)
         {
             var note = await _noteService.AddAsync(request, runId);
             if (note == null) return NotFound();
             return CreatedAtAction(nameof(Get), new { gameId, runId, note.Id }, note);
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(NoteRequest request, int gameId, int runId, int id)
+        public async Task<IActionResult> Update(
+            NoteRequest request, int gameId, int runId, int id)
         {
             bool updated = await _noteService.UpdateAsync(request, runId, id);
 
@@ -53,6 +57,22 @@ namespace ShmupCompanion.Api.Controllers
                 return NotFound();
 
             return NoContent();
+        }
+
+        [HttpGet("{id}/images/{noteImageId:int}")]
+        public async Task<IActionResult> GetImage(
+            int gameId, int runId, int id, int noteImageId)
+        {
+            return NoContent(); // TODO
+        }
+
+        [HttpPost("{id}/images")]
+        public async Task<ActionResult<string>> CreateImage(
+            int gameId, int runId, int id, IFormFile image)
+        {;
+            int? noteImageId = await _noteService.AddImageAsync(id, image);
+            if(noteImageId == null) return NotFound();
+            return Ok($"{id}/images/{noteImageId}");
         }
     }
 }

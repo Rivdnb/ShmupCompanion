@@ -11,6 +11,7 @@ namespace ShmupCompanion.Api.Data
         public DbSet<Game> Games => Set<Game>();
         public DbSet<Run> Runs => Set<Run>();
         public DbSet<Note> Notes => Set<Note>();
+        public DbSet<NoteImage> NoteImages => Set<NoteImage>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -23,10 +24,16 @@ namespace ShmupCompanion.Api.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Run>()
-            .HasMany(run => run.Notes)
-            .WithOne(note => note.Run)
-            .HasForeignKey(note => note.RunId)
-            .OnDelete(DeleteBehavior.Cascade);
+                .HasMany(run => run.Notes)
+                .WithOne(note => note.Run)
+                .HasForeignKey(note => note.RunId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Note>()
+                .HasMany(note => note.Images)
+                .WithOne(noteImage => noteImage.Note)
+                .HasForeignKey(noteImage => noteImage.NoteId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

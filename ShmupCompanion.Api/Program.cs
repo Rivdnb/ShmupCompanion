@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ShmupCompanion.Api.Data;
+using ShmupCompanion.Api.Interfaces;
 using ShmupCompanion.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,7 @@ builder.Services.AddDbContext<ShmupCompanionContext>(options =>
 builder.Services.AddScoped<GameService>();
 builder.Services.AddScoped<RunService>();
 builder.Services.AddScoped<NoteService>();
+builder.Services.AddScoped<IImageStorageService, ImageStorageService>();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
