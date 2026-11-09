@@ -1,4 +1,5 @@
 ﻿using ShmupCompanion.Api.Interfaces;
+using ShmupCompanion.Contracts;
 
 namespace ShmupCompanion.Api.Services
 {
@@ -14,6 +15,10 @@ namespace ShmupCompanion.Api.Services
             Directory.CreateDirectory(_uploadPath);
         }
 
+        public string GetFilePath(string fileName)
+        {
+            return Path.Combine(_uploadPath, fileName);
+        }
         public async Task<string> SaveAsync(
             IFormFile image,
             CancellationToken cancellationToken = default)

@@ -24,8 +24,12 @@ builder.Services.AddScoped<RunApiService>();
 builder.Services.AddScoped<NoteApiService>();
 builder.Services.AddBitBlazorUIServices();
 builder.Services.AddBitBlazorUIExtrasServices();
+builder.Services.AddReverseProxy()
+    .LoadFromConfig(
+        builder.Configuration.GetSection("ReverseProxy"));
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -40,6 +44,7 @@ app.UseHttpsRedirection();
 app.UseAntiforgery();
 
 app.MapStaticAssets();
+app.MapReverseProxy();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 

@@ -6,7 +6,7 @@ using ShmupCompanion.Api.Services;
 namespace ShmupCompanion.Api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("/api/games")]
     public class GamesController : ControllerBase
     {
         private readonly GameService _gameService;

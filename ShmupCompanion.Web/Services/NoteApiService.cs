@@ -16,12 +16,12 @@ namespace ShmupCompanion.Web.Services
 
         public async Task<List<NoteDto>> GetAllForRunAsync(int gameId, int runId)
         {
-            return await _httpClient.GetFromJsonAsync<List<NoteDto>>($"games/{gameId}/runs/{runId}/notes")
+            return await _httpClient.GetFromJsonAsync<List<NoteDto>>($"api/games/{gameId}/runs/{runId}/notes")
                    ?? [];
         }
         public async Task<NoteDto?> GetAsync(int gameId, int runId, int id)
         {
-            var response = await _httpClient.GetAsync($"games/{gameId}/runs/{runId}/notes/{id}");
+            var response = await _httpClient.GetAsync($"api/games/{gameId}/runs/{runId}/notes/{id}");
 
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
@@ -35,7 +35,7 @@ namespace ShmupCompanion.Web.Services
 
         public async Task<NoteDto?> PostAsync(NoteRequest request, int gameId, int runId)
         {
-            var response = await _httpClient.PostAsJsonAsync($"games/{gameId}/runs/{runId}/notes", request);
+            var response = await _httpClient.PostAsJsonAsync($"api/games/{gameId}/runs/{runId}/notes", request);
 
             response.EnsureSuccessStatusCode();
 
@@ -43,13 +43,13 @@ namespace ShmupCompanion.Web.Services
         }
         public async Task UpdateAsync(NoteRequest request, int gameId, int runId, int id)
         {
-            var response = await _httpClient.PutAsJsonAsync($"games/{gameId}/runs/{runId}/notes/{id}", request);
+            var response = await _httpClient.PutAsJsonAsync($"api/games/{gameId}/runs/{runId}/notes/{id}", request);
 
             response.EnsureSuccessStatusCode();
         }
         public async Task DeleteAsync(int gameId, int runId, int id)
         {
-            var response = await _httpClient.DeleteAsync($"games/{gameId}/runs/{runId}/notes/{id}");
+            var response = await _httpClient.DeleteAsync($"api/games/{gameId}/runs/{runId}/notes/{id}");
 
             response.EnsureSuccessStatusCode();
         }
@@ -66,7 +66,7 @@ namespace ShmupCompanion.Web.Services
             content.Add(imageContent, "image", image.FileName);
 
             var response = await _httpClient.PostAsync(
-                $"games/{gameId}/runs/{runId}/notes/{id}/images", content);
+                $"/api/games/{gameId}/runs/{runId}/notes/{id}/images", content); //TODO seperate images to other controller/endpoint
 
             response.EnsureSuccessStatusCode();
 

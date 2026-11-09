@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ShmupCompanion.Api.Data;
-using ShmupCompanion.Api.Models;
 using ShmupCompanion.Api.Interfaces;
+using ShmupCompanion.Api.Models;
 using ShmupCompanion.Contracts;
+using System.Net.Mime;
 
 
 namespace ShmupCompanion.Api.Services
@@ -99,13 +100,30 @@ namespace ShmupCompanion.Api.Services
             return true;
         }
 
-        public async Task<int?> AddImageAsync(int noteId, IFormFile image)
+        public async Task<NoteImageDto?> GetImageAsync(int noteId, int noteImageId)
+        {
+            var noteImage = await _context.NoteImages.
+                FirstOrDefaultAsync(i => i.Id == noteImageId && i.NoteId == noteId);
+
+            if (noteImage == null) return null;
+
+            string filePath = _imageStorage.GetFilePath(noteImage.FilePath);
+
+            return new NoteImageDto(
+                noteImage.Id,
+                noteImage.NoteId,
+                noteImage.FileName,
+                noteImage.ContentType,
+                filePath
+            );
+        }
+        public async Task<int> AddImageAsync(int noteId, IFormFile image)
         { // TODO: implement and check
             var note = await _context.Notes
                 .FindAsync(noteId);
 
             if (note == null)
-                return null;
+                return -1;
 
             // Validate file
 
@@ -114,9 +132,9 @@ namespace ShmupCompanion.Api.Services
             var noteImage = new NoteImage
             {
                 NoteId = noteId,
-                FileName = image.FileName,
+                FileName = image.FileName, // original filename
                 ContentType = image.ContentType,
-                FilePath = fileName
+                FilePath = fileName // GUID filename
             };
 
             _context.NoteImages.Add(noteImage);

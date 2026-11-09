@@ -15,12 +15,12 @@ namespace ShmupCompanion.Web.Services
 
         public async Task<List<GameDto>> GetAllAsync()
         {
-            return await _httpClient.GetFromJsonAsync<List<GameDto>>("games")
+            return await _httpClient.GetFromJsonAsync<List<GameDto>>("api/games")
                    ?? [];
         }
         public async Task<GameDto?> GetAsync(int id)
         {
-            var response = await _httpClient.GetAsync($"games/{id}");
+            var response = await _httpClient.GetAsync($"api/games/{id}");
 
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
@@ -34,7 +34,7 @@ namespace ShmupCompanion.Web.Services
 
         public async Task<GameDto?> PostAsync(GameRequest request)
         {
-            var response = await _httpClient.PostAsJsonAsync("games", request);
+            var response = await _httpClient.PostAsJsonAsync("api/games", request);
 
             response.EnsureSuccessStatusCode();
 
@@ -42,13 +42,13 @@ namespace ShmupCompanion.Web.Services
         }
         public async Task UpdateAsync(GameRequest request, int id)
         {
-            var response = await _httpClient.PutAsJsonAsync($"games/{id}", request);
+            var response = await _httpClient.PutAsJsonAsync($"api/games/{id}", request);
 
             response.EnsureSuccessStatusCode();
         }
         public async Task DeleteAsync(int id)
         {
-            var response = await _httpClient.DeleteAsync($"games/{id}");
+            var response = await _httpClient.DeleteAsync($"api/games/{id}");
 
             response.EnsureSuccessStatusCode();
         }

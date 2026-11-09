@@ -1,12 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using ShmupCompanion.Api.Models;
-using ShmupCompanion.Contracts;
 using ShmupCompanion.Api.Services;
+using ShmupCompanion.Contracts;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ShmupCompanion.Api.Controllers
 {
     [ApiController]
-    [Route("games/{gameId:int}/runs/{runId:int}/notes")]
+    [Route("/api/games/{gameId:int}/runs/{runId:int}/notes")]
     public class NotesController : ControllerBase
     {
         private readonly NoteService _noteService;
@@ -63,16 +64,20 @@ namespace ShmupCompanion.Api.Controllers
         public async Task<IActionResult> GetImage(
             int gameId, int runId, int id, int noteImageId)
         {
-            return NoContent(); // TODO
+            var noteImage = await _noteService.GetImageAsync(id, noteImageId);
+            if (noteImage == null)
+                return NotFound();
+
+            return PhysicalFile(noteImage.FilePath, noteImage.ContentType);
         }
 
         [HttpPost("{id}/images")]
         public async Task<ActionResult<string>> CreateImage(
             int gameId, int runId, int id, IFormFile image)
         {;
-            int? noteImageId = await _noteService.AddImageAsync(id, image);
-            if(noteImageId == null) return NotFound();
-            return Ok($"{id}/images/{noteImageId}");
+            int noteImageId = await _noteService.AddImageAsync(id, image);
+            if(noteImageId == -1) return NotFound();
+            return Ok($"/api/games/{gameId}/runs/{runId}/notes/{id}/images/{noteImageId}");
         }
     }
 }
