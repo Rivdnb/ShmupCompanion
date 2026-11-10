@@ -13,14 +13,13 @@
 else
 {
     <h1>@note!.Name</h1>
-    <BitButton ButtonType="BitButtonType.Submit" onclick="HandleSubmit">Save Changes</BitButton>
     <div>
-        <BitRichTextEditor @bind-Value="updateNote.Text" 
-                           OnImageUpload="HandleImageUpload"/>
+        <BitRichTextEditor @bind-Value="updateNote.Text" OnImageUpload="HandleImageUpload"
+                           OnChange="OnChangeSave" DebounceMs="1500"/>
     </div>
 }
 
-@if (lastUpload is not null)
+@if (lastUpload != null)
 {
     <div>Last upload: <b>@lastUpload</b></div>
 }
@@ -36,6 +35,9 @@ else
     private bool isLoading = true;
     private NoteRequest updateNote = new NoteRequest();
     private string? lastUpload;
+    private string? lastSavedContent;
+    private bool isSaving = false;
+    private bool isDirty = false;
 
 
     protected override void OnParametersSet()
@@ -56,12 +58,14 @@ else
         updateNote.Name = note.Name;
         updateNote.Text = note.Text;
         isLoading = false;
+        lastSavedContent = updateNote.Text;
     }
 
-    private async Task HandleSubmit()
+    private async Task OnChangeSave() // auto save (TODO)
     {
+        if (updateNote.Text == lastSavedContent) return;
         await NoteApiService.UpdateAsync(updateNote, GameId, RunId, Id);
-        Navigation.NavigateTo($"games/{GameId}/runs/{RunId}/notes/{Id}", true);
+        lastSavedContent = updateNote.Text;
     }
 
     private async Task DeleteGame()
@@ -74,7 +78,6 @@ else
     {
         lastUpload = $"{image.FileName} ({image.ContentType}, {image.Content.Length:N0} bytes)";
         return await NoteApiService.UploadImageAsync(GameId, RunId, Id, image);
-        // todo: also submit edited note containing image url here?
     }
 
 }

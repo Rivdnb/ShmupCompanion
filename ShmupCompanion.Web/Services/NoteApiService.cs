@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Bit.BlazorUI;
+using Microsoft.AspNetCore.Mvc;
 using ShmupCompanion.Contracts;
+using System.Diagnostics;
 using System.Net;
-using Bit.BlazorUI;
 
 namespace ShmupCompanion.Web.Services
 {
@@ -44,7 +45,9 @@ namespace ShmupCompanion.Web.Services
         public async Task UpdateAsync(NoteRequest request, int gameId, int runId, int id)
         {
             var response = await _httpClient.PutAsJsonAsync($"api/games/{gameId}/runs/{runId}/notes/{id}", request);
-
+            //var responseContent = await response.Content.ReadAsStringAsync();
+            //Debug.WriteLine($"Status: {response.StatusCode}");
+            //Debug.WriteLine($"Response: {responseContent}");
             response.EnsureSuccessStatusCode();
         }
         public async Task DeleteAsync(int gameId, int runId, int id)

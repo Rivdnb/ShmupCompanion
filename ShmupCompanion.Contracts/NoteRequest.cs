@@ -7,7 +7,7 @@ namespace ShmupCompanion.Contracts
         [Required]
         [StringLength(50, MinimumLength = 1)]
         public string Name { get; set;} = string.Empty;
-        [StringLength(1000)]
+        [StringLength(100000)]
         public string Text { get; set; } = string.Empty;
     }
 }
