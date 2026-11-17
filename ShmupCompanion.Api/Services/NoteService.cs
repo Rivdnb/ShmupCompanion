@@ -82,6 +82,8 @@ namespace ShmupCompanion.Api.Services
             existing.Name = request.Name;
             existing.Text = request.Text;
 
+            //TODO: Update the NoteImages belonging to exisiting note (ToBeDeleted+Time)
+
             await _context.SaveChangesAsync();
 
             return true;
@@ -118,7 +120,7 @@ namespace ShmupCompanion.Api.Services
             );
         }
         public async Task<int> AddImageAsync(int noteId, IFormFile image)
-        { // TODO: implement and check
+        {
             var note = await _context.Notes
                 .FindAsync(noteId);
 
@@ -142,6 +144,33 @@ namespace ShmupCompanion.Api.Services
             await _context.SaveChangesAsync();
 
             return noteImage.Id;
+        }
+
+        // TODO: Delete note images marked to be deleted, after grace period
+        public async Task DeleteNoteImagesAsync()
+        {
+            var noteImages = await _context.NoteImages
+                .Where(noteImage => noteImage.ToBeDeleted &&
+                                    noteImage.MarkedForDeletionAt < DateTime.UtcNow.AddHours(-24))
+                .Select(noteImage => noteImage)
+                .ToListAsync();
+
+            if(noteImages ==  null) return;
+
+            // Get image file paths
+            List<string> filePaths = new List<string>();
+            foreach (var noteImage in noteImages)
+                filePaths.Append(noteImage.FilePath);
+
+            // Delete NoteImages from DB
+            _context.NoteImages.RemoveRange(noteImages);
+            await _context.SaveChangesAsync();
+
+            // Delete image files
+            foreach(string filePath in filePaths)
+            {
+                _imageStorage.Delete(filePath); // TODO error handling?
+            }
         }
     }
 }

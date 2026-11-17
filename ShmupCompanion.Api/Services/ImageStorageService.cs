@@ -38,14 +38,12 @@ namespace ShmupCompanion.Api.Services
             return fileName;
         }
 
-        public Task DeleteAsync(string filePath)
+        public void Delete(string filePath)
         {
             string fullPath = Path.Combine(_uploadPath, filePath);
 
             if (File.Exists(fullPath))
                 File.Delete(fullPath);
-
-            return Task.CompletedTask;
         }
     }
 

@@ -8,6 +8,6 @@ namespace ShmupCompanion.Api.Interfaces
         Task<string> SaveAsync(
             IFormFile file,
             CancellationToken cancellationToken = default);
-        Task DeleteAsync(string filePath);
+        void Delete(string filePath);
     }
 }
