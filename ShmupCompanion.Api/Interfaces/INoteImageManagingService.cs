@@ -2,7 +2,7 @@
 {
     public interface INoteImageManagingService
     {
-        public List<int> ParseHtmlImageIds(int noteId);
-        public void UpdateNoteImages(int noteId);
+        public List<int> ParseHtmlImageIds(string source);
+        public Task UpdateNoteImagesAsync(int noteId);
     }
 }

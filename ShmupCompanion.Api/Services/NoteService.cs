@@ -13,12 +13,16 @@ namespace ShmupCompanion.Api.Services
         private readonly ShmupCompanionContext _context;
 
         private readonly IImageStorageService _imageStorage;
+
+        private readonly INoteImageManagingService _noteImageManagingService;
         public NoteService(
             ShmupCompanionContext context, 
-            IImageStorageService imageStorage)
+            IImageStorageService imageStorage,
+            INoteImageManagingService noteImageManagingService)
         {
             _context = context;
             _imageStorage = imageStorage;
+            _noteImageManagingService = noteImageManagingService;
         }
         public async Task<List<NoteDto>> GetAllForRunAsync(int runId)
         {
@@ -77,14 +81,14 @@ namespace ShmupCompanion.Api.Services
             var existing = await _context.Notes.FindAsync(id);
 
             if (existing == null) return false;
-            if (existing.RunId != runId) return false; // TODO error check: routed run doesn't match the run belonging to note
+            if (existing.RunId != runId) return false; // TODO-errorcheck: routed run doesn't match the run belonging to note
 
             existing.Name = request.Name;
             existing.Text = request.Text;
 
             //TODO: Update the NoteImages belonging to exisiting note (ToBeDeleted+Time)
-            // 1. Image service cleanup interface + service
             // 2. Call the cleanup service here, passing the noteId
+            await _noteImageManagingService.UpdateNoteImagesAsync(id);
 
             await _context.SaveChangesAsync();
 
