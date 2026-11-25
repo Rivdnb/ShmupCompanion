@@ -69,10 +69,9 @@ namespace ShmupCompanion.Web.Services
             content.Add(imageContent, "image", image.FileName);
 
             var response = await _httpClient.PostAsync(
-                $"/api/games/{gameId}/runs/{runId}/notes/{id}/images", content); //TODO seperate images to other controller/endpoint
+                $"/api/games/{gameId}/runs/{runId}/notes/{id}/images", content);
 
             response.EnsureSuccessStatusCode();
-
             return await response.Content.ReadAsStringAsync(); // returns URL
         }
     }

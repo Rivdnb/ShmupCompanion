@@ -5,6 +5,7 @@
 @inject RunApiService RunApiService
 @inject NoteApiService NoteApiService
 @inject NavigationManager Navigation
+@using System.Diagnostics;
 
 @if (isLoading)
 {
@@ -75,13 +76,12 @@ else
 
         isSaving = true;
         updateNote.Text = noteContent; // copy current content to noterequest
-
         try
         {
             while (isDirty) // repeat until saved content is up to date
             {
                 // Save content
-                await NoteApiService.UpdateAsync(updateNote, GameId, RunId, Id); 
+                await NoteApiService.UpdateAsync(updateNote, GameId, RunId, Id);
                 lastSavedContent = updateNote.Text;
 
                 // Check if user edited during a request.
@@ -107,8 +107,9 @@ else
         Navigation.NavigateTo($"/games/{GameId}/runs/{RunId}");
     }
 
+    // note: HandleImageUpload is always executed before OnChangeSave is called
     private async Task<string?> HandleImageUpload(BitRichTextEditorImageUpload image)
-    {
+    {   
         lastUpload = $"{image.FileName} ({image.ContentType}, {image.Content.Length:N0} bytes)";
         return await NoteApiService.UploadImageAsync(GameId, RunId, Id, image);
     }

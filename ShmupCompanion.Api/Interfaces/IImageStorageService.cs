@@ -1,13 +1,11 @@
-﻿using ShmupCompanion.Contracts;
-
-namespace ShmupCompanion.Api.Interfaces
+﻿namespace ShmupCompanion.Api.Interfaces
 {
     public interface IImageStorageService
     {
         public string GetFilePath(string fileName);
-        Task<string> SaveAsync(
+        public Task<string> SaveAsync(
             IFormFile file,
             CancellationToken cancellationToken = default);
-        void Delete(string filePath);
+        public void Delete(string filePath);
     }
 }

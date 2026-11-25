@@ -77,12 +77,14 @@ namespace ShmupCompanion.Api.Services
             var existing = await _context.Notes.FindAsync(id);
 
             if (existing == null) return false;
-            if (existing.RunId != runId) return false; // TODO error: routed run doesn't match the run belonging to note
+            if (existing.RunId != runId) return false; // TODO error check: routed run doesn't match the run belonging to note
 
             existing.Name = request.Name;
             existing.Text = request.Text;
 
             //TODO: Update the NoteImages belonging to exisiting note (ToBeDeleted+Time)
+            // 1. Image service cleanup interface + service
+            // 2. Call the cleanup service here, passing the noteId
 
             await _context.SaveChangesAsync();
 
@@ -149,6 +151,7 @@ namespace ShmupCompanion.Api.Services
         // TODO: Delete note images marked to be deleted, after grace period
         public async Task DeleteNoteImagesAsync()
         {
+            // Get note images that should be deleted
             var noteImages = await _context.NoteImages
                 .Where(noteImage => noteImage.ToBeDeleted &&
                                     noteImage.MarkedForDeletionAt < DateTime.UtcNow.AddHours(-24))
@@ -162,7 +165,7 @@ namespace ShmupCompanion.Api.Services
             foreach (var noteImage in noteImages)
                 filePaths.Append(noteImage.FilePath);
 
-            // Delete NoteImages from DB
+            // Delete note images from DB
             _context.NoteImages.RemoveRange(noteImages);
             await _context.SaveChangesAsync();
 
