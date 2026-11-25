@@ -10,7 +10,7 @@ namespace ShmupCompanion.Api.Services
         public ImageStorageService(IWebHostEnvironment environment)
         {
             _uploadPath = Path.Combine(
-                environment.ContentRootPath,"App_Data","uploads");
+                environment.ContentRootPath,"AppData","Uploads");
 
             Directory.CreateDirectory(_uploadPath);
         }
