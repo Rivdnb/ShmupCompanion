@@ -75,12 +75,12 @@ else
         }
 
         isSaving = true;
-        updateNote.Text = noteContent; // copy current content to noterequest
         try
         {
             while (isDirty) // repeat until saved content is up to date
             {
                 // Save content
+                updateNote.Text = noteContent; // copy current content to noterequest
                 await NoteApiService.UpdateAsync(updateNote, GameId, RunId, Id);
                 lastSavedContent = updateNote.Text;
 
@@ -110,6 +110,7 @@ else
     // note: HandleImageUpload is always executed before OnChangeSave is called
     private async Task<string?> HandleImageUpload(BitRichTextEditorImageUpload image)
     {   
+        Debug.WriteLine("Handle Upload Started");
         lastUpload = $"{image.FileName} ({image.ContentType}, {image.Content.Length:N0} bytes)";
         return await NoteApiService.UploadImageAsync(GameId, RunId, Id, image);
     }

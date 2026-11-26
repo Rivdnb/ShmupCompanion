@@ -14,11 +14,11 @@ namespace ShmupCompanion.Api.Services
 
         private readonly IImageStorageService _imageStorage;
 
-        private readonly INoteImageManagingService _noteImageManagingService;
+        private readonly INoteImageManagerService _noteImageManagingService;
         public NoteService(
             ShmupCompanionContext context, 
             IImageStorageService imageStorage,
-            INoteImageManagingService noteImageManagingService)
+            INoteImageManagerService noteImageManagingService)
         {
             _context = context;
             _imageStorage = imageStorage;
@@ -86,11 +86,10 @@ namespace ShmupCompanion.Api.Services
             existing.Name = request.Name;
             existing.Text = request.Text;
 
-            //TODO: Update the NoteImages belonging to exisiting note (ToBeDeleted+Time)
-            // 2. Call the cleanup service here, passing the noteId
+            // Update the NoteImages belonging to this note: (un)marking for deletion
             await _noteImageManagingService.UpdateNoteImagesAsync(id);
 
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(); // also save the noteImages changes
 
             return true;
         }
@@ -150,34 +149,6 @@ namespace ShmupCompanion.Api.Services
             await _context.SaveChangesAsync();
 
             return noteImage.Id;
-        }
-
-        // TODO: Delete note images marked to be deleted, after grace period
-        public async Task DeleteNoteImagesAsync()
-        {
-            // Get note images that should be deleted
-            var noteImages = await _context.NoteImages
-                .Where(noteImage => noteImage.ToBeDeleted &&
-                                    noteImage.MarkedForDeletionAt < DateTime.UtcNow.AddHours(-24))
-                .Select(noteImage => noteImage)
-                .ToListAsync();
-
-            if(noteImages ==  null) return;
-
-            // Get image file paths
-            List<string> filePaths = new List<string>();
-            foreach (var noteImage in noteImages)
-                filePaths.Append(noteImage.FilePath);
-
-            // Delete note images from DB
-            _context.NoteImages.RemoveRange(noteImages);
-            await _context.SaveChangesAsync();
-
-            // Delete image files
-            foreach(string filePath in filePaths)
-            {
-                _imageStorage.Delete(filePath); // TODO error handling?
-            }
         }
     }
 }

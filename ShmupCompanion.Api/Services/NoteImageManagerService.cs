@@ -3,6 +3,7 @@ using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
 using AngleSharp.Text;
+using Microsoft.EntityFrameworkCore;
 using ShmupCompanion.Api.Data;
 using ShmupCompanion.Api.Interfaces;
 using ShmupCompanion.Api.Models;
@@ -11,13 +12,15 @@ using System.Text.RegularExpressions;
 
 namespace ShmupCompanion.Api.Services
 {
-    public class NoteImageManagerService : INoteImageManagingService
+    public class NoteImageManagerService : INoteImageManagerService
     {
         private readonly ShmupCompanionContext _context;
+        private readonly IImageStorageService _imageStorage;
 
-        public NoteImageManagerService(ShmupCompanionContext context)
+        public NoteImageManagerService(ShmupCompanionContext context, IImageStorageService imageStorage)
         {
             _context = context;
+            _imageStorage = imageStorage;
         }
         public List<int> ParseHtmlImageIds(string source)
         {
@@ -49,17 +52,91 @@ namespace ShmupCompanion.Api.Services
             }
             return imageIds;
         }
-
+        public void MarkNoteImagse(List<NoteImage> noteImages, bool toBeDeleted)
+        {
+            foreach (var noteImage in noteImages)
+            {
+                noteImage.ToBeDeleted = toBeDeleted;
+                noteImage.MarkedForDeletionAt = toBeDeleted ? DateTime.UtcNow : null;
+            }
+        }
         public async Task UpdateNoteImagesAsync(int noteId)
         {
+            // Get Note
             var note = await _context.Notes.FindAsync(noteId);
             if (note == null) return;
 
-            List<int> imageIds = ParseHtmlImageIds(note.Text);
-            if(imageIds.Count == 0) return;
+            List<int> existingImageIds;
 
-            // TODO: update noteImage info for this note
+            try // Get noteImage id's of present images in Note
+            { 
+                existingImageIds = ParseHtmlImageIds(note.Text);
+            }
+            catch(Exception ex) // Error in parsing note's HTML, avoid (un)marking noteImages
+            {
+                Debug.WriteLine(ex.Message);
+                return; 
+            }
+            // TODO-Optimize: This if-else can probably be combined/simplified
+            if (existingImageIds.Count == 0) //unmark all noteImages, since none are present in note
+            {
+                var unmarkedNoteImages = await _context.NoteImages
+                    .Where(noteImage => !noteImage.ToBeDeleted)
+                    .Select(noteImage => noteImage)
+                    .ToListAsync();
 
+                // Mark these noteImages for deletion
+                MarkNoteImagse(unmarkedNoteImages, true);
+            }
+            else
+            {
+                // Get noteImages present in Note that were marked for deletion
+                var markedNoteImages = await _context.NoteImages
+                    .Where(noteImage => noteImage.ToBeDeleted &&
+                                        existingImageIds.Contains(noteImage.Id))
+                    .Select(noteImage => noteImage)
+                    .ToListAsync();
+
+                // Unmark these noteImages
+                MarkNoteImagse(markedNoteImages, false);
+
+                // Get noteImages not present in Note, which are not yet marked for deletion
+                var unmarkedNoteImages = await _context.NoteImages
+                    .Where(noteImage => !noteImage.ToBeDeleted &&
+                                        !existingImageIds.Contains(noteImage.Id))
+                    .Select(noteImage => noteImage)
+                    .ToListAsync();
+
+                // Mark these noteImages for deletion
+                MarkNoteImagse(unmarkedNoteImages, true);
+            }
+        }
+        public async Task DeleteNoteImagesAsync(CancellationToken cancellationToken)
+        {
+            // Get note images that should be deleted
+            var noteImages = await _context.NoteImages
+                .Where(noteImage => noteImage.ToBeDeleted &&
+                                    noteImage.MarkedForDeletionAt < DateTime.UtcNow.AddHours(-24))
+                .Select(noteImage => noteImage)
+                .ToListAsync(cancellationToken);
+
+            if (noteImages == null) return;
+
+            // Get image file paths
+            List<string> filePaths = new List<string>();
+            foreach (var noteImage in noteImages)
+                filePaths.Add(noteImage.FilePath);
+
+            // Delete note images from DB
+            _context.NoteImages.RemoveRange(noteImages);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            // Delete image files
+            foreach (string filePath in filePaths)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                _imageStorage.Delete(filePath); // TODO: needs error handling?
+            }
         }
     }
 }

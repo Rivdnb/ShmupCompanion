@@ -16,7 +16,8 @@ builder.Services.AddScoped<GameService>();
 builder.Services.AddScoped<RunService>();
 builder.Services.AddScoped<NoteService>();
 builder.Services.AddScoped<IImageStorageService, ImageStorageService>();
-builder.Services.AddScoped<INoteImageManagingService, NoteImageManagerService>();
+builder.Services.AddScoped<INoteImageManagerService, NoteImageManagerService>();
+builder.Services.AddHostedService<ImageCleanupBackgroundService>();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
